@@ -26,3 +26,33 @@
     flex-direction: column;
   }
 }
+
+
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  line-height: 1.4;
+  background: #fafafa;
+  color: #222;
+}
+
+
+#root {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+header h1 {
+  font-size: 1.75rem;
+  margin: 1rem 0;
+  text-align: center;
+}
+
+
+@media (min-width: 600px) {
+  header h1 {
+    font-size: 2.5rem;
+  }
+}
+
