@@ -3,7 +3,7 @@ import MovieCard from './MovieCard';
 import './MovieList.css';
 
 export default function MovieList() {
-  const apiKey = import.meta.env.VITE_TMDB_API_KEY;
+  const apiKey = import.meta.env.VITE_API_KEY;
   const [view, setView] = useState('nowPlaying');      // 'nowPlaying' or 'search'
   const [movies, setMovies] = useState([]);
   const [page, setPage] = useState(1);
