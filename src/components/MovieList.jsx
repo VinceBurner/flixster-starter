@@ -1,7 +1,7 @@
-import React from 'react';
-import MovieCard from './MovieCard';
-import data from '../data/data';     // ← import your static data
-import './MovieList.css';
+import React from "react";
+import MovieCard from "./MovieCard";
+import data from "../data/data"; // ← import your static data
+import "./MovieList.css";
 
 export default function MovieList() {
   const movies = data.results || [];
