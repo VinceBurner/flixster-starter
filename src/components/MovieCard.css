@@ -1,0 +1,17 @@
+.movie-card {
+  width: 180px;
+  margin: 0.5rem;
+  text-align: center;
+}
+.movie-card img {
+  width: 100%;
+  border-radius: 4px;
+}
+.movie-card h3 {
+  font-size: 1rem;
+  margin: 0.5rem 0 0.25rem;
+}
+.movie-card p {
+  margin: 0;
+  font-size: 0.9rem;
+}

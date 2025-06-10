@@ -1,12 +1,10 @@
-import { useState } from 'react'
-import './App.css'
+// src/App.jsx
+import React from 'react';
 
-const App = () => {
+export default function App() {
   return (
-    <div className="App">
-    
+    <div>
+      <h1>🛠️ Test — App is mounting</h1>
     </div>
-  )
+  );
 }
-
-export default App
