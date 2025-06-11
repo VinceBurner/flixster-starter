@@ -1,35 +1,48 @@
+
+
 import React, { useEffect, useState } from 'react';
 import MovieCard from './MovieCard';
+import MovieDetails from './MovieDetails';
 import './MovieList.css';
 
-export default function MovieList() {
-  const apiKey = import.meta.env.VITE_API_KEY;
-  const [view, setView] = useState('nowPlaying');      // 'nowPlaying' or 'search'
-  const [movies, setMovies] = useState([]);
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [searchQuery, setSearchQuery] = useState('');
 
-  // Fetch whenever view, page, or query changes
+export default function MovieList() {
+  const apiKey = import.meta.env.VITE_TMDB_API_KEY;
+  
+  const [view, setView] = useState('nowPlaying');    // 'nowPlaying' or 'search'
+  const [movies, setMovies] = useState([]);          // list of movies to render
+  const [page, setPage] = useState(1);               // current page for pagination
+  const [totalPages, setTotalPages] = useState(1);   // how many pages are available
+  const [searchQuery, setSearchQuery] = useState(''); 
+  const [selectedMovie, setSelectedMovie] = useState(null); // for modal details
+
+  // Fetch movies whenever view, page, or searchQuery changes 
   useEffect(() => {
-    if (!apiKey) return console.error('Missing VITE_TMDB_API_KEY!');
+    if (!apiKey) {
+      console.error('Missing VITE_TMDB_API_KEY!');
+      return;
+    }
     const controller = new AbortController();
 
     async function fetchMovies() {
       let url;
       if (view === 'nowPlaying') {
-        url = `https://api.themoviedb.org/3/movie/now_playing?api_key=${apiKey}&page=${page}`;
+        url = `https://api.themoviedb.org/3/movie/now_playing`
+            + `?api_key=${apiKey}&page=${page}`;
       } else {
-        url = `https://api.themoviedb.org/3/search/movie?api_key=${apiKey}`
-            + `&query=${encodeURIComponent(searchQuery)}&page=${page}`;
+        url = `https://api.themoviedb.org/3/search/movie`
+            + `?api_key=${apiKey}`
+            + `&query=${encodeURIComponent(searchQuery)}`
+            + `&page=${page}`;
       }
 
       try {
         const res = await fetch(url, { signal: controller.signal });
         const json = await res.json();
         const results = json.results || [];
-        // if first page, replace; otherwise append
-        setMovies((prev) => (page === 1 ? results : [...prev, ...results]));
+        setMovies(prev =>
+          page === 1 ? results : [...prev, ...results]
+        );
         setTotalPages(json.total_pages || 1);
       } catch (err) {
         if (err.name !== 'AbortError') console.error(err);
@@ -40,12 +53,18 @@ export default function MovieList() {
     return () => controller.abort();
   }, [apiKey, view, page, searchQuery]);
 
-  // Handlers
+  // ── Handlers ─────────────────────────────────────────
   const handleLoadMore = () => {
-    if (page < totalPages) setPage((p) => p + 1);
+    if (page < totalPages) {
+      setPage(p => p + 1);
+    }
   };
 
-  const handleSearchSubmit = (e) => {
+  const handleSearchChange = e => {
+    setSearchQuery(e.target.value);
+  };
+
+  const handleSearchSubmit = e => {
     e.preventDefault();
     if (!searchQuery.trim()) return;
     setView('search');
@@ -57,11 +76,29 @@ export default function MovieList() {
       setView('nowPlaying');
       setPage(1);
       setSearchQuery('');
+      setMovies([]);
     }
   };
 
+  // Fetch and open details modal
+  const handleCardClick = async movie => {
+    try {
+      const res = await fetch(
+        `https://api.themoviedb.org/3/movie/${movie.id}?api_key=${apiKey}`
+      );
+      const full = await res.json();
+      setSelectedMovie(full);
+    } catch (err) {
+      console.error('Error loading movie details', err);
+    }
+  };
+
+  const closeDetails = () => setSelectedMovie(null);
+
+  // ── Render ───────────────────────────────────────────
   return (
     <main>
+      {/* Controls */}
       <header className="controls">
         <button
           onClick={handleViewNowPlaying}
@@ -75,7 +112,7 @@ export default function MovieList() {
             type="text"
             placeholder="Search movies…"
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={handleSearchChange}
           />
           <button type="submit" disabled={!searchQuery.trim()}>
             Search
@@ -83,31 +120,45 @@ export default function MovieList() {
         </form>
       </header>
 
+      {/* Section Title */}
       <h2 className="section-title">
         {view === 'nowPlaying'
           ? 'Now Playing'
-          : `Search Results for "${searchQuery}"`}
+          : `Search Results for “${searchQuery}”`}
       </h2>
 
+      {/* Movie Grid */}
       <div className="movie-list">
-        {movies.map((m) => (
-          <MovieCard
+        {movies.map(m => (
+          <div
             key={m.id}
-            title={m.title}
-            posterPath={m.poster_path}
-            voteAverage={m.vote_average}
-          />
+            onClick={() => handleCardClick(m)}
+            style={{ cursor: 'pointer' }}
+          >
+            <MovieCard
+              title={m.title}
+              posterPath={m.poster_path}
+              voteAverage={m.vote_average}
+            />
+          </div>
         ))}
       </div>
 
+      {/* No movies message */}
       {movies.length === 0 && (
         <p className="no-movies">No movies to display.</p>
       )}
 
-      {page < totalPages && movies.length > 0 && (
+      {/* Load More */}
+      {view === 'nowPlaying' && page < totalPages && movies.length > 0 && (
         <div className="load-more">
           <button onClick={handleLoadMore}>Load More</button>
         </div>
+      )}
+
+      {/* Movie Details Modal */}
+      {selectedMovie && (
+        <MovieDetails movie={selectedMovie} onClose={closeDetails} />
       )}
     </main>
   );
