@@ -1,5 +1,5 @@
-import React from 'react';
-import './MovieDetails.css';
+import React from "react";
+import "./MovieDetails.css";
 
 export default function MovieDetails({ movie, onClose }) {
   if (!movie) return null;
@@ -11,13 +11,15 @@ export default function MovieDetails({ movie, onClose }) {
     vote_average,
     backdrop_path,
     genres = [],
-    overview
+    overview,
   } = movie;
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={e => e.stopPropagation()}>
-        <button className="close-btn" onClick={onClose}>✕</button>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <button className="close-btn" onClick={onClose}>
+          ✕
+        </button>
 
         {backdrop_path && (
           <img
@@ -28,12 +30,18 @@ export default function MovieDetails({ movie, onClose }) {
         )}
 
         <h2>{title}</h2>
-        <p><strong>Runtime:</strong> {runtime} minutes</p>
-        <p><strong>Release Date:</strong> {release_date}</p>
-        <p><strong>Rating:</strong> ⭐ {vote_average}</p>
+        <p>
+          <strong>Runtime:</strong> {runtime} minutes
+        </p>
+        <p>
+          <strong>Release Date:</strong> {release_date}
+        </p>
+        <p>
+          <strong>Rating:</strong> ⭐ {vote_average}
+        </p>
         {genres.length > 0 && (
           <p>
-            <strong>Genres:</strong> {genres.map(g => g.name).join(', ')}
+            <strong>Genres:</strong> {genres.map((g) => g.name).join(", ")}
           </p>
         )}
         <p className="overview">{overview}</p>

@@ -1,57 +1,7 @@
-.movie-list {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-}
 main h2 {
   text-align: center;
   margin: 1rem 0;
 }
-.controls {
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-  flex-wrap: wrap;
-  margin-bottom: 1rem;
-}
-
-.search-form {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.search-form input {
-  padding: 0.5rem;
-  font-size: 1rem;
-}
-
-.movie-list {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 1rem;
-  padding: 0 1rem;
-}
-
-.section-title {
-  text-align: center;
-  margin: 1.5rem 0 1rem;
-}
-
-.no-movies {
-  text-align: center;
-  color: #c44;
-}
-
-.load-more {
-  text-align: center;
-  margin: 2rem 0;
-}
-
-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
 
 .controls {
   display: flex;
@@ -59,6 +9,7 @@ button:disabled {
   flex-wrap: wrap;
   justify-content: center;
   margin-bottom: 1rem;
+  align-items: center;
 }
 
 /* On very small screens, stack controls vertically */
@@ -111,4 +62,29 @@ button:disabled {
   cursor: not-allowed;
 }
 
+/* Sort filter styles */
+.sort-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
 
+.sort-select {
+  padding: 0.5rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  font-size: 0.9rem;
+  min-width: 200px;
+}
+
+@media (max-width: 768px) {
+  .sort-container {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .sort-select {
+    flex: 1;
+  }
+}

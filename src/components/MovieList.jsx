@@ -1,87 +1,144 @@
-
-
-import React, { useEffect, useState } from 'react';
-import MovieCard from './MovieCard';
-import MovieDetails from './MovieDetails';
-import './MovieList.css';
-
+import React, { useEffect, useState } from "react";
+import MovieCard from "./MovieCard";
+import MovieDetails from "./MovieDetails";
+import "./MovieList.css";
 
 export default function MovieList() {
-  const apiKey = import.meta.env.VITE_TMDB_API_KEY;
-  
-  const [view, setView] = useState('nowPlaying');    // 'nowPlaying' or 'search'
-  const [movies, setMovies] = useState([]);          // list of movies to render
-  const [page, setPage] = useState(1);               // current page for pagination
-  const [totalPages, setTotalPages] = useState(1);   // how many pages are available
-  const [searchQuery, setSearchQuery] = useState(''); 
-  const [selectedMovie, setSelectedMovie] = useState(null); // for modal details
+  const apiKey = import.meta.env.VITE_API_KEY;
 
-  // Fetch movies whenever view, page, or searchQuery changes 
+  const [view, setView] = useState("nowPlaying"); // 'nowPlaying' or 'search'
+  const [movies, setMovies] = useState([]); // list of movies to render
+  const [page, setPage] = useState(1); // current page for pagination
+  const [totalPages, setTotalPages] = useState(1); // how many pages are available
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedMovie, setSelectedMovie] = useState(null); // for modal details
+  const [sortBy, setSortBy] = useState("popularity.desc"); // default sort option
+
+  // Fetch movies whenever view, page, or searchQuery changes
   useEffect(() => {
     if (!apiKey) {
-      console.error('Missing VITE_TMDB_API_KEY!');
+      console.error("Missing VITE_API_KEY!");
       return;
     }
     const controller = new AbortController();
 
     async function fetchMovies() {
       let url;
-      if (view === 'nowPlaying') {
-        url = `https://api.themoviedb.org/3/movie/now_playing`
-            + `?api_key=${apiKey}&page=${page}`;
+      if (view === "nowPlaying") {
+        url =
+          `https://api.themoviedb.org/3/movie/now_playing` +
+          `?api_key=${apiKey}&page=${page}`;
       } else {
-        url = `https://api.themoviedb.org/3/search/movie`
-            + `?api_key=${apiKey}`
-            + `&query=${encodeURIComponent(searchQuery)}`
-            + `&page=${page}`;
+        url =
+          `https://api.themoviedb.org/3/search/movie` +
+          `?api_key=${apiKey}` +
+          `&query=${encodeURIComponent(searchQuery)}` +
+          `&page=${page}`;
       }
 
       try {
         const res = await fetch(url, { signal: controller.signal });
         const json = await res.json();
         const results = json.results || [];
-        setMovies(prev =>
-          page === 1 ? results : [...prev, ...results]
-        );
+
+        // Apply client-side sorting to the results
+        const sortedResults = sortMovies(results, sortBy);
+
+        setMovies((prev) => {
+          if (page === 1) {
+            return sortedResults;
+          } else {
+            // When loading more pages, we need to sort all movies together
+            const allMovies = [...prev, ...sortedResults];
+            return sortMovies(allMovies, sortBy);
+          }
+        });
+
         setTotalPages(json.total_pages || 1);
       } catch (err) {
-        if (err.name !== 'AbortError') console.error(err);
+        if (err.name !== "AbortError") console.error(err);
       }
     }
 
     fetchMovies();
     return () => controller.abort();
-  }, [apiKey, view, page, searchQuery]);
+  }, [apiKey, view, page, searchQuery]); // Remove sortBy from dependencies
+
+  // Sort options
+  const sortOptions = [
+    { value: "popularity.desc", label: "Popularity (High to Low)" },
+    { value: "popularity.asc", label: "Popularity (Low to High)" },
+    { value: "vote_average.desc", label: "Rating (High to Low)" },
+    { value: "vote_average.asc", label: "Rating (Low to High)" },
+    { value: "release_date.desc", label: "Release Date (Newest)" },
+    { value: "release_date.asc", label: "Release Date (Oldest)" },
+    { value: "title.asc", label: "Title (A-Z)" },
+    { value: "title.desc", label: "Title (Z-A)" },
+  ];
+
+  // Function to sort movies based on the selected sort option
+  const sortMovies = (moviesToSort, sortOption) => {
+    if (!moviesToSort || moviesToSort.length === 0) return [];
+
+    const [field, direction] = sortOption.split(".");
+    const multiplier = direction === "asc" ? 1 : -1;
+
+    return [...moviesToSort].sort((a, b) => {
+      // Handle null or undefined values
+      if (!a[field] && a[field] !== 0) return 1 * multiplier;
+      if (!b[field] && b[field] !== 0) return -1 * multiplier;
+
+      // Special handling for dates
+      if (field === "release_date") {
+        const dateA = a[field] ? new Date(a[field]) : new Date(0);
+        const dateB = b[field] ? new Date(b[field]) : new Date(0);
+        return (dateA - dateB) * multiplier;
+      }
+
+      // Regular number or string comparison
+      if (a[field] < b[field]) return -1 * multiplier;
+      if (a[field] > b[field]) return 1 * multiplier;
+      return 0;
+    });
+  };
+
+  const handleSortChange = (e) => {
+    const newSortBy = e.target.value;
+    setSortBy(newSortBy);
+
+    // Apply the new sort to the existing movies
+    setMovies((movies) => sortMovies(movies, newSortBy));
+  };
 
   // ── Handlers ─────────────────────────────────────────
   const handleLoadMore = () => {
     if (page < totalPages) {
-      setPage(p => p + 1);
+      setPage((p) => p + 1);
     }
   };
 
-  const handleSearchChange = e => {
+  const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
   };
 
-  const handleSearchSubmit = e => {
+  const handleSearchSubmit = (e) => {
     e.preventDefault();
     if (!searchQuery.trim()) return;
-    setView('search');
+    setView("search");
     setPage(1);
   };
 
   const handleViewNowPlaying = () => {
-    if (view !== 'nowPlaying') {
-      setView('nowPlaying');
+    if (view !== "nowPlaying") {
+      setView("nowPlaying");
       setPage(1);
-      setSearchQuery('');
+      setSearchQuery("");
       setMovies([]);
     }
   };
 
   // Fetch and open details modal
-  const handleCardClick = async movie => {
+  const handleCardClick = async (movie) => {
     try {
       const res = await fetch(
         `https://api.themoviedb.org/3/movie/${movie.id}?api_key=${apiKey}`
@@ -89,7 +146,7 @@ export default function MovieList() {
       const full = await res.json();
       setSelectedMovie(full);
     } catch (err) {
-      console.error('Error loading movie details', err);
+      console.error("Error loading movie details", err);
     }
   };
 
@@ -100,10 +157,7 @@ export default function MovieList() {
     <main>
       {/* Controls */}
       <header className="controls">
-        <button
-          onClick={handleViewNowPlaying}
-          disabled={view === 'nowPlaying'}
-        >
+        <button onClick={handleViewNowPlaying} disabled={view === "nowPlaying"}>
           Now Playing
         </button>
 
@@ -118,22 +172,38 @@ export default function MovieList() {
             Search
           </button>
         </form>
+
+        <div className="sort-container">
+          <label htmlFor="sort-select">Sort by: </label>
+          <select
+            id="sort-select"
+            value={sortBy}
+            onChange={handleSortChange}
+            className="sort-select"
+          >
+            {sortOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
       </header>
 
       {/* Section Title */}
       <h2 className="section-title">
-        {view === 'nowPlaying'
-          ? 'Now Playing'
+        {view === "nowPlaying"
+          ? "Now Playing"
           : `Search Results for “${searchQuery}”`}
       </h2>
 
       {/* Movie Grid */}
       <div className="movie-list">
-        {movies.map(m => (
+        {movies.map((m) => (
           <div
             key={m.id}
             onClick={() => handleCardClick(m)}
-            style={{ cursor: 'pointer' }}
+            style={{ cursor: "pointer" }}
           >
             <MovieCard
               title={m.title}
@@ -150,7 +220,7 @@ export default function MovieList() {
       )}
 
       {/* Load More */}
-      {view === 'nowPlaying' && page < totalPages && movies.length > 0 && (
+      {view === "nowPlaying" && page < totalPages && movies.length > 0 && (
         <div className="load-more">
           <button onClick={handleLoadMore}>Load More</button>
         </div>
