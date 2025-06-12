@@ -43,6 +43,7 @@ export default function MovieList() {
     10752: "War",
     37: "Western",
   };
+
   const sortMenuRef = useRef(null);
   const filterMenuRef = useRef(null);
 
