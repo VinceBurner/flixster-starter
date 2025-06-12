@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import MovieCard from "./MovieCard";
 import MovieDetails from "./MovieDetails";
 import "./MovieList.css";
@@ -13,6 +13,38 @@ export default function MovieList() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedMovie, setSelectedMovie] = useState(null); // for modal details
   const [sortBy, setSortBy] = useState("popularity.desc"); // default sort option
+  const [showSortMenu, setShowSortMenu] = useState(false);
+  const [showFilterMenu, setShowFilterMenu] = useState(false);
+  const [filters, setFilters] = useState({
+    minRating: 0,
+    maxRating: 10,
+    genres: [],
+  });
+
+  // Genre mapping based on TMDB genre IDs
+  const genreMap = {
+    28: "Action",
+    12: "Adventure",
+    16: "Animation",
+    35: "Comedy",
+    80: "Crime",
+    99: "Documentary",
+    18: "Drama",
+    10751: "Family",
+    14: "Fantasy",
+    36: "History",
+    27: "Horror",
+    10402: "Music",
+    9648: "Mystery",
+    10749: "Romance",
+    878: "Science Fiction",
+    10770: "TV Movie",
+    53: "Thriller",
+    10752: "War",
+    37: "Western",
+  };
+  const sortMenuRef = useRef(null);
+  const filterMenuRef = useRef(null);
 
   // Fetch movies whenever view, page, or searchQuery changes
   useEffect(() => {
@@ -121,6 +153,13 @@ export default function MovieList() {
     setSearchQuery(e.target.value);
   };
 
+  const handleClearSearch = () => {
+    setSearchQuery("");
+    if (view === "search") {
+      handleViewNowPlaying();
+    }
+  };
+
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     if (!searchQuery.trim()) return;
@@ -152,6 +191,31 @@ export default function MovieList() {
 
   const closeDetails = () => setSelectedMovie(null);
 
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (
+        sortMenuRef.current &&
+        !sortMenuRef.current.contains(event.target) &&
+        !event.target.classList.contains("sort-button")
+      ) {
+        setShowSortMenu(false);
+      }
+      if (
+        filterMenuRef.current &&
+        !filterMenuRef.current.contains(event.target) &&
+        !event.target.classList.contains("filter-button")
+      ) {
+        setShowFilterMenu(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   // ── Render ───────────────────────────────────────────
   return (
     <main>
@@ -162,31 +226,171 @@ export default function MovieList() {
         </button>
 
         <form onSubmit={handleSearchSubmit} className="search-form">
-          <input
-            type="text"
-            placeholder="Search movies…"
-            value={searchQuery}
-            onChange={handleSearchChange}
-          />
+          <div className="search-input-container">
+            <input
+              type="text"
+              placeholder="Search movies…"
+              value={searchQuery}
+              onChange={handleSearchChange}
+            />
+            {searchQuery && (
+              <button
+                type="button"
+                className="clear-search-btn"
+                onClick={handleClearSearch}
+                aria-label="Clear search"
+              >
+                ×
+              </button>
+            )}
+          </div>
           <button type="submit" disabled={!searchQuery.trim()}>
             Search
           </button>
         </form>
 
-        <div className="sort-container">
-          <label htmlFor="sort-select">Sort by: </label>
-          <select
-            id="sort-select"
-            value={sortBy}
-            onChange={handleSortChange}
-            className="sort-select"
-          >
-            {sortOptions.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
+        <div className="button-controls">
+          <div className="dropdown-container">
+            <button
+              className="control-button sort-button"
+              onClick={() => {
+                setShowSortMenu(!showSortMenu);
+                setShowFilterMenu(false);
+              }}
+            >
+              <span>Sort</span>
+              <span className="icon">▼</span>
+              {sortBy !== "popularity.desc" && (
+                <span className="active-indicator"></span>
+              )}
+            </button>
+            {showSortMenu && (
+              <div className="dropdown-menu" ref={sortMenuRef}>
+                {sortOptions.map((option) => (
+                  <div
+                    key={option.value}
+                    className={`dropdown-item ${
+                      sortBy === option.value ? "active" : ""
+                    }`}
+                    onClick={() => {
+                      handleSortChange({ target: { value: option.value } });
+                      setShowSortMenu(false);
+                    }}
+                  >
+                    {option.label}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="dropdown-container">
+            <button
+              className="control-button filter-button"
+              onClick={() => {
+                setShowFilterMenu(!showFilterMenu);
+                setShowSortMenu(false);
+              }}
+            >
+              <span>Filter</span>
+              <span className="icon">▼</span>
+              {(filters.minRating > 0 ||
+                filters.maxRating < 10 ||
+                filters.genres.length > 0) && (
+                <span className="active-indicator"></span>
+              )}
+            </button>
+            {showFilterMenu && (
+              <div className="dropdown-menu filter-menu" ref={filterMenuRef}>
+                <div className="filter-section">
+                  <h4>Rating</h4>
+                  <div className="rating-filter">
+                    <div className="rating-inputs">
+                      <input
+                        type="number"
+                        min="0"
+                        max="10"
+                        step="0.5"
+                        value={filters.minRating}
+                        onChange={(e) =>
+                          setFilters({
+                            ...filters,
+                            minRating: parseFloat(e.target.value) || 0,
+                          })
+                        }
+                      />
+                      <span>to</span>
+                      <input
+                        type="number"
+                        min="0"
+                        max="10"
+                        step="0.5"
+                        value={filters.maxRating}
+                        onChange={(e) =>
+                          setFilters({
+                            ...filters,
+                            maxRating: parseFloat(e.target.value) || 10,
+                          })
+                        }
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="filter-section">
+                  <h4>Genres</h4>
+                  <div className="genre-filter">
+                    {Object.entries(genreMap).map(([id, name]) => (
+                      <label key={id} className="genre-checkbox">
+                        <input
+                          type="checkbox"
+                          checked={filters.genres.includes(parseInt(id))}
+                          onChange={(e) => {
+                            const genreId = parseInt(id);
+                            if (e.target.checked) {
+                              setFilters({
+                                ...filters,
+                                genres: [...filters.genres, genreId],
+                              });
+                            } else {
+                              setFilters({
+                                ...filters,
+                                genres: filters.genres.filter(
+                                  (g) => g !== genreId
+                                ),
+                              });
+                            }
+                          }}
+                        />
+                        <span>{name}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+                <div className="filter-actions">
+                  <button
+                    onClick={() => {
+                      // Apply filters (already applied via the filter function)
+                      setShowFilterMenu(false);
+                    }}
+                  >
+                    Apply
+                  </button>
+                  <button
+                    onClick={() => {
+                      setFilters({
+                        minRating: 0,
+                        maxRating: 10,
+                        genres: [],
+                      });
+                    }}
+                  >
+                    Reset
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </header>
 
@@ -199,19 +403,33 @@ export default function MovieList() {
 
       {/* Movie Grid */}
       <div className="movie-list">
-        {movies.map((m) => (
-          <div
-            key={m.id}
-            onClick={() => handleCardClick(m)}
-            style={{ cursor: "pointer" }}
-          >
-            <MovieCard
-              title={m.title}
-              posterPath={m.poster_path}
-              voteAverage={m.vote_average}
-            />
-          </div>
-        ))}
+        {movies
+          .filter((m) => {
+            // Apply rating filter
+            const rating = m.vote_average || 0;
+            const passesRatingFilter =
+              rating >= filters.minRating && rating <= filters.maxRating;
+
+            // Apply genre filter
+            const passesGenreFilter =
+              filters.genres.length === 0 ||
+              filters.genres.some((genreId) => m.genre_ids?.includes(genreId));
+
+            return passesRatingFilter && passesGenreFilter;
+          })
+          .map((m) => (
+            <div
+              key={m.id}
+              onClick={() => handleCardClick(m)}
+              style={{ cursor: "pointer" }}
+            >
+              <MovieCard
+                title={m.title}
+                posterPath={m.poster_path}
+                voteAverage={m.vote_average}
+              />
+            </div>
+          ))}
       </div>
 
       {/* No movies message */}

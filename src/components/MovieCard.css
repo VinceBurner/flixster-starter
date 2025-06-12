@@ -21,7 +21,6 @@
   flex-direction: column;
   align-items: center;
   width: 100%;
-  /* max-width keeps it from stretching too far on big displays */
   max-width: 220px;
   text-align: center;
 }
