@@ -1,5 +1,7 @@
 .App {
-  min-height: 100vh;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
   background: linear-gradient(135deg, #0f3f62 0%, #1a5490 50%, #2563eb 100%);
 }
 
@@ -122,8 +124,11 @@
   }
 }
 
-body {
+html, body {
   margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
   font-family: "Inter", system-ui, sans-serif;
   line-height: 1.6;
   background: #0f172a;
@@ -133,8 +138,12 @@ body {
 }
 
 #root {
-  min-height: 100vh;
+  height: 100vh;
   width: 100%;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Enhanced movie card hover effects */

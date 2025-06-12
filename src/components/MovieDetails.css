@@ -4,63 +4,101 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.8);
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 1rem;
   z-index: 1000;
+  backdrop-filter: blur(5px);
 }
 
 .modal-content {
-  background: #fff;
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
   width: 100%;
   max-width: 600px;
   max-height: 90vh;
   overflow-y: auto;
-  border-radius: 8px;
+  border-radius: 16px;
   position: relative;
-  padding: 1.5rem;
+  padding: 2rem;
+  color: #e2e8f0;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  backdrop-filter: blur(10px);
 }
 
 .close-btn {
   position: absolute;
-  top: 0.75rem;
-  right: 0.75rem;
-  background: #e74c3c;
-  color: white;
-  border: none;
+  top: 15px;
+  right: 15px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
   border-radius: 50%;
-  width: 32px;
-  height: 32px;
+  width: 40px;
+  height: 40px;
   font-size: 1.25rem;
   line-height: 1;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   z-index: 10;
   transition: all 0.2s ease;
+  font-weight: bold;
 }
 
 .close-btn:hover {
-  background: #c0392b;
+  background: rgba(239, 68, 68, 0.2);
+  color: #ffffff;
   transform: scale(1.1);
 }
 
 .backdrop {
   width: 100%;
-  border-radius: 4px;
+  border-radius: 8px;
   margin-bottom: 1rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 .modal-content h2 {
   margin-top: 0;
   margin-bottom: 0.5rem;
+  color: #ffffff;
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+.modal-content h3 {
+  color: #cbd5e1;
+  font-size: 1.1rem;
+  margin: 1rem 0 0.5rem;
+}
+
+.modal-content p {
+  color: #e2e8f0;
+  line-height: 1.6;
 }
 
 .overview {
   margin-top: 1rem;
-  line-height: 1.5;
+  line-height: 1.6;
+  color: #e2e8f0;
+}
+
+.movie-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin: 1rem 0;
+  font-size: 0.9rem;
+}
+
+.movie-info span {
+  background: rgba(59, 130, 246, 0.1);
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  color: #cbd5e1;
 }
