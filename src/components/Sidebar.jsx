@@ -15,7 +15,10 @@ export default function Sidebar({
 }) {
   const handleViewChange = (view) => {
     onViewChange(view);
-    onClose(); // Close sidebar on mobile after selection
+    // Only close sidebar on mobile devices (screen width < 1024px)
+    if (window.innerWidth < 1024) {
+      onClose();
+    }
   };
 
   return (
