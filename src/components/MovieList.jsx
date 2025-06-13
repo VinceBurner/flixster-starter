@@ -3,10 +3,23 @@ import MovieCard from "./MovieCard";
 import MovieDetails from "./MovieDetails";
 import "./MovieList.css";
 
-export default function MovieList() {
+export default function MovieList({
+  currentView,
+  favorites,
+  watched,
+  onAddToFavorites,
+  onRemoveFromFavorites,
+  onAddToWatched,
+  onRemoveFromWatched,
+  isMovieFavorite,
+  isMovieWatched
+}) {
   const apiKey = import.meta.env.VITE_API_KEY;
 
   const [view, setView] = useState("nowPlaying"); // 'nowPlaying' or 'search'
+
+  // Use currentView from props, fallback to local view for search functionality
+  const activeView = currentView || view;
   const [movies, setMovies] = useState([]); // list of movies to render
   const [page, setPage] = useState(1); // current page for pagination
   const [totalPages, setTotalPages] = useState(1); // how many pages are available
@@ -49,6 +62,19 @@ export default function MovieList() {
 
   // Fetch movies whenever view, page, or searchQuery changes
   useEffect(() => {
+    // Handle favorites and watched views - no API call needed
+    if (activeView === "favorites") {
+      setMovies(favorites || []);
+      setTotalPages(1);
+      return;
+    }
+
+    if (activeView === "watched") {
+      setMovies(watched || []);
+      setTotalPages(1);
+      return;
+    }
+
     if (!apiKey) {
       console.error("Missing VITE_API_KEY!");
       return;
@@ -95,7 +121,7 @@ export default function MovieList() {
 
     fetchMovies();
     return () => controller.abort();
-  }, [apiKey, view, page, searchQuery]); // Remove sortBy from dependencies
+  }, [apiKey, view, page, searchQuery, activeView, favorites, watched]); // Add activeView, favorites, watched to dependencies
 
   // Sort options
   const sortOptions = [
@@ -234,20 +260,20 @@ export default function MovieList() {
               value={searchQuery}
               onChange={handleSearchChange}
             />
-            {searchQuery && (
-              <button
-                type="button"
-                className="clear-search-btn"
-                onClick={handleClearSearch}
-                aria-label="Clear search"
-              >
-                ×
-              </button>
-            )}
           </div>
           <button type="submit" disabled={!searchQuery.trim()}>
             Search
           </button>
+          {searchQuery && (
+            <button
+              type="button"
+              className="clear-search-btn"
+              onClick={handleClearSearch}
+              aria-label="Clear search"
+            >
+              ×
+            </button>
+          )}
         </form>
 
         <div className="button-controls">
@@ -397,9 +423,13 @@ export default function MovieList() {
 
       {/* Section Title */}
       <h2 className="section-title">
-        {view === "nowPlaying"
+        {activeView === "favorites"
+          ? "My Favorites"
+          : activeView === "watched"
+          ? "Watched Movies"
+          : view === "nowPlaying"
           ? "Now Playing"
-          : `Search Results for “${searchQuery}”`}
+          : `Search Results for "${searchQuery}"`}
       </h2>
 
       {/* Movie Grid */}
@@ -428,6 +458,13 @@ export default function MovieList() {
                 title={m.title}
                 posterPath={m.poster_path}
                 voteAverage={m.vote_average}
+                movie={m}
+                isFavorite={isMovieFavorite && isMovieFavorite(m.id)}
+                isWatched={isMovieWatched && isMovieWatched(m.id)}
+                onAddToFavorites={onAddToFavorites}
+                onRemoveFromFavorites={onRemoveFromFavorites}
+                onAddToWatched={onAddToWatched}
+                onRemoveFromWatched={onRemoveFromWatched}
               />
             </div>
           ))}
@@ -445,7 +482,7 @@ export default function MovieList() {
         </div>
       )}
 
-      {/* Movie Details Modal */}
+      {}
       {selectedMovie && (
         <MovieDetails movie={selectedMovie} onClose={closeDetails} />
       )}

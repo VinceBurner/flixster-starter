@@ -1,13 +1,91 @@
 // src/App.jsx
-import React from "react";
+import React, { useState, useEffect } from "react";
 import MovieList from "./components/MovieList";
+import Sidebar from "./components/Sidebar";
 import "./App.css";
 
 export default function App() {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [currentView, setCurrentView] = useState("nowPlaying");
+  const [favorites, setFavorites] = useState([]);
+  const [watched, setWatched] = useState([]);
+
+  // Load favorites and watched from localStorage on component mount
+  useEffect(() => {
+    const savedFavorites = localStorage.getItem("flixster-favorites");
+    const savedWatched = localStorage.getItem("flixster-watched");
+
+    if (savedFavorites) {
+      setFavorites(JSON.parse(savedFavorites));
+    }
+
+    if (savedWatched) {
+      setWatched(JSON.parse(savedWatched));
+    }
+  }, []);
+
+  // Save to localStorage whenever favorites or watched changes
+  useEffect(() => {
+    localStorage.setItem("flixster-favorites", JSON.stringify(favorites));
+  }, [favorites]);
+
+  useEffect(() => {
+    localStorage.setItem("flixster-watched", JSON.stringify(watched));
+  }, [watched]);
+
+  const toggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen);
+  };
+
+  const closeSidebar = () => {
+    setSidebarOpen(false);
+  };
+
+  const handleViewChange = (view) => {
+    setCurrentView(view);
+  };
+
+  const addToFavorites = (movie) => {
+    setFavorites((prev) => {
+      const isAlreadyFavorite = prev.some((fav) => fav.id === movie.id);
+      if (isAlreadyFavorite) return prev;
+      return [...prev, movie];
+    });
+  };
+
+  const removeFromFavorites = (movieId) => {
+    setFavorites((prev) => prev.filter((movie) => movie.id !== movieId));
+  };
+
+  const addToWatched = (movie) => {
+    setWatched((prev) => {
+      const isAlreadyWatched = prev.some((watched) => watched.id === movie.id);
+      if (isAlreadyWatched) return prev;
+      return [...prev, movie];
+    });
+  };
+
+  const removeFromWatched = (movieId) => {
+    setWatched((prev) => prev.filter((movie) => movie.id !== movieId));
+  };
+
+  const isMovieFavorite = (movieId) => {
+    return favorites.some((movie) => movie.id === movieId);
+  };
+
+  const isMovieWatched = (movieId) => {
+    return watched.some((movie) => movie.id === movieId);
+  };
+
   return (
     <div className="App">
       <header className="App-header">
         <div className="header-content">
+          <button className="hamburger-menu" onClick={toggleSidebar}>
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
           <div className="logo">
             <span className="logo-icon">🎬</span>
             <h1 className="app-title">Flixster</h1>
@@ -19,7 +97,33 @@ export default function App() {
           </nav>
         </div>
       </header>
-      <MovieList />
+
+      <div className="app-content">
+        <Sidebar
+          isOpen={sidebarOpen}
+          onClose={closeSidebar}
+          activeView={currentView}
+          onViewChange={handleViewChange}
+          favorites={favorites}
+          watched={watched}
+          onRemoveFromFavorites={removeFromFavorites}
+          onRemoveFromWatched={removeFromWatched}
+        />
+
+        <MovieList
+          currentView={currentView}
+          favorites={favorites}
+          watched={watched}
+          onAddToFavorites={addToFavorites}
+          onRemoveFromFavorites={removeFromFavorites}
+          onAddToWatched={addToWatched}
+          onRemoveFromWatched={removeFromWatched}
+          isMovieFavorite={isMovieFavorite}
+          isMovieWatched={isMovieWatched}
+          onViewChange={handleViewChange}
+        />
+      </div>
+
       <footer className="App-footer">
         <div className="footer-content">
           <div className="footer-section">

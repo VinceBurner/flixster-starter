@@ -55,7 +55,6 @@ main h2 {
   flex: 1;
   min-width: 0;
   padding: 0.75rem 1rem;
-  padding-right: 40px;
   border: 1px solid rgba(59, 130, 246, 0.3);
   border-radius: 12px;
   background: rgba(30, 41, 59, 0.6);
@@ -135,27 +134,22 @@ main h2 {
 }
 
 .clear-search-btn {
-  position: absolute;
-  right: 5px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
   border: none;
-  font-size: 18px;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  font-weight: 600;
   cursor: pointer;
-  color: #888;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.2);
+  font-size: 0.9rem;
 }
 
 .clear-search-btn:hover {
-  background-color: rgba(0, 0, 0, 0.1);
-  color: #333;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.3);
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
 }
 
 .movie-list {
