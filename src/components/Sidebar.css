@@ -77,22 +77,23 @@
 }
 
 .sidebar-nav-item {
-  display: flex;
+  display: flex !important;
   align-items: center;
   gap: 0.75rem;
   width: 100%;
   padding: 1rem;
   margin-bottom: 0.5rem;
-  background: rgba(30, 41, 59, 0.6);
-  border: 1px solid rgba(59, 130, 246, 0.2);
+  background: #1e293b !important;
+  border: 2px solid #3b82f6 !important;
   border-radius: 12px;
-  color: #e2e8f0;
-  font-size: 1rem;
-  font-weight: 500;
+  color: #ffffff !important;
+  font-size: 1rem !important;
+  font-weight: 600 !important;
   cursor: pointer;
   transition: all 0.3s ease;
   text-align: left;
   position: relative;
+  min-height: 60px;
 }
 
 .sidebar-nav-item:hover {
