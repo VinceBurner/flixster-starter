@@ -12,7 +12,7 @@ export default function MovieList({
   onAddToWatched,
   onRemoveFromWatched,
   isMovieFavorite,
-  isMovieWatched
+  isMovieWatched,
 }) {
   const apiKey = import.meta.env.VITE_API_KEY;
 
@@ -264,16 +264,15 @@ export default function MovieList({
           <button type="submit" disabled={!searchQuery.trim()}>
             Search
           </button>
-          {searchQuery && (
-            <button
-              type="button"
-              className="clear-search-btn"
-              onClick={handleClearSearch}
-              aria-label="Clear search"
-            >
-              ×
-            </button>
-          )}
+          <button
+            type="button"
+            className="clear-search-btn"
+            onClick={handleClearSearch}
+            aria-label="Clear search"
+            disabled={!searchQuery.trim()}
+          >
+            Clear
+          </button>
         </form>
 
         <div className="button-controls">

@@ -10,6 +10,8 @@ export default function Sidebar({
   watched,
   onRemoveFromFavorites,
   onRemoveFromWatched,
+  onClearAllFavorites,
+  onClearAllWatched,
 }) {
   const handleViewChange = (view) => {
     onViewChange(view);
@@ -66,7 +68,18 @@ export default function Sidebar({
         {/* Favorites List */}
         {activeView === "favorites" && (
           <div className="sidebar-list">
-            <h3>Favorite Movies</h3>
+            <div className="list-header">
+              <h3>Favorite Movies</h3>
+              {favorites.length > 0 && (
+                <button
+                  className="clear-all-btn"
+                  onClick={onClearAllFavorites}
+                  title="Clear all favorites"
+                >
+                  Clear All
+                </button>
+              )}
+            </div>
             {favorites.length === 0 ? (
               <p className="empty-list">No favorite movies yet</p>
             ) : (
@@ -103,7 +116,18 @@ export default function Sidebar({
         {/* Watched List */}
         {activeView === "watched" && (
           <div className="sidebar-list">
-            <h3>Watched Movies</h3>
+            <div className="list-header">
+              <h3>Watched Movies</h3>
+              {watched.length > 0 && (
+                <button
+                  className="clear-all-btn"
+                  onClick={onClearAllWatched}
+                  title="Clear all watched"
+                >
+                  Clear All
+                </button>
+              )}
+            </div>
             {watched.length === 0 ? (
               <p className="empty-list">No watched movies yet</p>
             ) : (

@@ -146,10 +146,18 @@ main h2 {
   font-size: 0.9rem;
 }
 
-.clear-search-btn:hover {
+.clear-search-btn:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(239, 68, 68, 0.3);
   background: linear-gradient(135deg, #dc2626, #b91c1c);
+}
+
+.clear-search-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  background: rgba(239, 68, 68, 0.3);
+  box-shadow: none;
 }
 
 .movie-list {

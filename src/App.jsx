@@ -69,6 +69,14 @@ export default function App() {
     setWatched((prev) => prev.filter((movie) => movie.id !== movieId));
   };
 
+  const clearAllFavorites = () => {
+    setFavorites([]);
+  };
+
+  const clearAllWatched = () => {
+    setWatched([]);
+  };
+
   const isMovieFavorite = (movieId) => {
     return favorites.some((movie) => movie.id === movieId);
   };
@@ -112,6 +120,8 @@ export default function App() {
           watched={watched}
           onRemoveFromFavorites={removeFromFavorites}
           onRemoveFromWatched={removeFromWatched}
+          onClearAllFavorites={clearAllFavorites}
+          onClearAllWatched={clearAllWatched}
         />
 
         <MovieList
