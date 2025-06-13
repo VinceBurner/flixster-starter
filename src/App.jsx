@@ -102,11 +102,6 @@ export default function App() {
             <span className="logo-icon">🎬</span>
             <h1 className="app-title">Flixster</h1>
           </div>
-          <nav className="nav-links">
-            <span className="nav-item">Movies</span>
-            <span className="nav-item">Trending</span>
-            <span className="nav-item">Favorites</span>
-          </nav>
         </div>
       </header>
 
