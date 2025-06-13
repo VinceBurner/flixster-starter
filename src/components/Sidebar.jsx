@@ -15,7 +15,6 @@ export default function Sidebar({
 }) {
   const handleViewChange = (view) => {
     onViewChange(view);
-    // Only close sidebar on mobile devices (screen width < 1024px)
     if (window.innerWidth < 1024) {
       onClose();
     }
@@ -42,7 +41,7 @@ export default function Sidebar({
             onClick={() => handleViewChange("nowPlaying")}
           >
             <span className="nav-icon">🎬</span>
-            Now Playing
+            Home
           </button>
 
           <button
