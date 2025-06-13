@@ -81,7 +81,11 @@ export default function App() {
     <div className="App">
       <header className="App-header">
         <div className="header-content">
-          <button className="hamburger-menu" onClick={toggleSidebar}>
+          <button
+            className={`hamburger-menu ${sidebarOpen ? "active" : ""}`}
+            onClick={toggleSidebar}
+            aria-label="Toggle sidebar menu"
+          >
             <span></span>
             <span></span>
             <span></span>
