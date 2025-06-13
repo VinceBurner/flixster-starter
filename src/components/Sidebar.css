@@ -364,15 +364,6 @@
 /* Animation for mobile menu toggle */
 @media (max-width: 1023px) {
   .sidebar {
-    transform: translateX(0);
-    transition: transform 0.3s ease;
-  }
-
-  .sidebar:not(.sidebar-open) {
-    transform: translateX(-100%);
-  }
-
-  .sidebar-open {
-    transform: translateX(0);
+    transition: left 0.3s ease;
   }
 }
