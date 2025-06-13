@@ -271,11 +271,6 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  .sidebar {
-    width: 280px;
-    left: -280px;
-  }
-
   .sidebar-header {
     padding: 1rem;
   }
@@ -316,11 +311,6 @@
 }
 
 @media (max-width: 480px) {
-  .sidebar {
-    width: 100vw;
-    left: -100vw;
-  }
-
   .movie-item {
     padding: 0.5rem;
   }
@@ -328,14 +318,6 @@
   .movie-item-poster {
     width: 40px;
     height: 60px;
-  }
-}
-
-/* Desktop - Keep sidebar hidden by default like mobile */
-@media (min-width: 1024px) {
-  .sidebar {
-    width: 350px;
-    left: -350px;
   }
 }
 
@@ -360,11 +342,4 @@
 .sidebar::-webkit-scrollbar-thumb:hover,
 .sidebar-list::-webkit-scrollbar-thumb:hover {
   background: rgba(59, 130, 246, 0.6);
-}
-
-/* Animation for mobile menu toggle */
-@media (max-width: 1023px) {
-  .sidebar {
-    transition: left 0.3s ease;
-  }
 }
